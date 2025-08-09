@@ -1,115 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy Birthday!</title>
 <style>
     body {
-        background: #1d1f20;
-        color: white;
-        font-family: 'Press Start 2P', cursive;
+        background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+        font-family: 'Comic Sans MS', cursive;
         text-align: center;
-        margin: 0;
+        color: white;
         overflow: hidden;
-    }
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-    .scene {
-        position: relative;
         height: 100vh;
     }
-    .door {
-        width: 120px;
-        height: 200px;
-        background: brown;
-        border: 5px solid #654321;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 100px;
-        transition: transform 1s;
-        z-index: 2;
+    h1 {
+        font-size: 3em;
+        margin-top: 20px;
+        animation: bounce 2s infinite;
     }
-    .door.open {
-        transform: translateX(-50%) translateY(0) rotateY(90deg);
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
-    .cat {
-        width: 80px;
-        position: absolute;
-        bottom: 100px;
-        left: 40%;
+    p {
+        font-size: 1.2em;
     }
-    .balloon {
-        width: 50px;
+    button {
+        background: #fff;
+        color: #ff69b4;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 1em;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: transform 0.2s;
+    }
+    button:hover {
+        transform: scale(1.1);
+    }
+    .heart {
         position: absolute;
+        font-size: 2em;
+        animation: fall linear infinite;
         cursor: pointer;
     }
-    #message {
-        position: absolute;
-        bottom: 40px;
-        width: 100%;
-        font-size: 12px;
-    }
-    #passcode-area {
-        display: none;
-        margin-top: 20px;
-    }
-    #gif {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        max-width: 80%;
-        z-index: 5;
+    @keyframes fall {
+        0% { transform: translateY(-10vh) rotate(0deg); }
+        100% { transform: translateY(110vh) rotate(360deg); }
     }
 </style>
 </head>
 <body>
 
-<div class="scene">
-    <img src="https://i.ibb.co/Wn7f0XJ/cat-pixel.png" class="cat" id="cat">
-    <div class="door" id="door"></div>
+<h1>🎉 Happy Birthday, Love! 🎂</h1>
 
-    <!-- Balloons -->
-    <img src="https://i.ibb.co/ZcMZb6S/balloon.png" class="balloon" style="top:20%; left:10%;" data-clue="Clue 1: It's our special day."/>
-    <img src="https://i.ibb.co/ZcMZb6S/balloon.png" class="balloon" style="top:30%; left:70%;" data-clue="Clue 2: Day & Month only."/>
-    <img src="https://i.ibb.co/ZcMZb6S/balloon.png" class="balloon" style="top:60%; left:50%;" data-clue="Clue 3: Numbers only!"/>
+<!-- GIF Preview -->
+<img src="birthday.gif" alt="Birthday GIF" style="max-width:90%;border-radius:20px;margin-top:10px;box-shadow:0 0 20px rgba(255,255,255,0.6);">
 
-    <div id="message">🎈 Click balloons for clues 🎈</div>
-    <div id="passcode-area">
-        <input type="text" id="passcode" placeholder="Enter code">
-        <button onclick="checkPasscode()">Unlock</button>
-    </div>
-</div>
+<p>Click the button below to see your special surprise 🎁</p>
+<button onclick="openGift()">Open Gift 🎁</button>
 
-<img id="gif" src="chalen1.gif">
+<canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
 
 <script>
-let cluesFound = 0;
-document.querySelectorAll('.balloon').forEach(balloon => {
-    balloon.addEventListener('click', () => {
-        alert(balloon.dataset.clue);
-        balloon.style.display = 'none';
-        cluesFound++;
-        if (cluesFound === 3) {
-            document.getElementById('message').textContent = "💡 Enter the passcode!";
-            document.getElementById('passcode-area').style.display = 'block';
-        }
-    });
-});
+// Floating clickable hearts
+function createHeart() {
+    let heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerHTML = '💖';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    heart.onclick = () => {
+        heart.innerHTML = '✨';
+        setTimeout(() => heart.remove(), 300);
+    };
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}
 
-function checkPasscode() {
-    let code = document.getElementById('passcode').value;
-    let correctCode = "1402"; // Change this to your date or secret
-    if (code === correctCode) {
-        document.getElementById('door').classList.add('open');
-        document.getElementById('cat').style.left = '60%';
-        setTimeout(() => {
-            document.getElementById('gif').style.display = 'block';
-        }, 1000);
-    } else {
-        alert("Wrong code! The cat meows sadly 🐱");
+// Confetti setup
+const canvas = document.getElementById('confettiCanvas');
+const ctx = canvas.getContext('2d');
+let confettiPieces = [];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function randomColor() {
+    const colors = ['#ff0', '#0f0', '#0ff', '#f0f', '#ff69b4', '#ffa500'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+function ConfettiPiece(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 6 + 4;
+    this.color = randomColor();
+    this.speedY = Math.random() * 3 + 2;
+    this.speedX = (Math.random() - 0.5) * 2;
+}
+function updateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiPieces.forEach((p, i) => {
+        p.y += p.speedY;
+        p.x += p.speedX;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        if (p.y > canvas.height) confettiPieces.splice(i, 1);
+    });
+    requestAnimationFrame(updateConfetti);
+}
+updateConfetti();
+
+function launchConfetti() {
+    for (let i = 0; i < 100; i++) {
+        confettiPieces.push(new ConfettiPiece(canvas.width/2, canvas.height/2));
     }
+}
+
+// Gift button action
+function openGift() {
+    alert("💌 Happy Birthday, my love! I love you forever 💕");
+    setInterval(createHeart, 800);
+    launchConfetti();
 }
 </script>
 
