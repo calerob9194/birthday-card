@@ -22,6 +22,16 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
+    .hidden {
+        display: none;
+    }
+    .bounce {
+        animation: bounce 0.5s infinite alternate;
+    }
+    @keyframes bounce {
+        from { transform: translateY(0); }
+        to { transform: translateY(-15px); }
+    }
     button {
         margin-top: 20px;
         background: #ff4d88;
@@ -35,22 +45,39 @@
     button:hover {
         background: #ff1a66;
     }
+    .gif-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
 </style>
 </head>
 <body>
 
 <h1>🎉 Happy Birthday, Love! 🎂</h1>
 
-<!-- GIFs side by side -->
-<img src="chalen2.gif" alt="Me clapping">
-<img src="marsh1.gif" alt="Him clapping">
+<!-- Button first -->
+<button onclick="startSurprise()">Open Gift 🎁</button>
 
-<p>Click the button for a little surprise 💖</p>
-<button onclick="showMessage()">Open Gift 🎁</button>
+<!-- GIF + Cake Row -->
+<div class="gif-row hidden" id="gifRow">
+    <img id="gifLeft" src="chalen2.gif" alt="Me clapping">
+    <img src="cake.png" alt="Cake" style="width:150px;">
+    <img id="gifRight" src="marsh1.gif" alt="Him clapping">
+</div>
 
 <script>
-function showMessage() {
+function startSurprise() {
     alert("💌 Happy Birthday, my love! 💕\nFrom me to you, forever and always.");
+    
+    // Show GIFs + cake
+    document.getElementById("gifRow").classList.remove("hidden");
+    
+    // Add bounce animation to both GIFs
+    document.getElementById("gifLeft").classList.add("bounce");
+    document.getElementById("gifRight").classList.add("bounce");
 }
 </script>
 
